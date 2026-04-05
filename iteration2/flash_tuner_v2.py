@@ -19,7 +19,7 @@ except ImportError:
 
 
 class FeaturePreprocessor:
-    """特征编码，自动判断类型"""
+    """Automatic feature encoder: detects binary, geometric, and categorical variables."""
 
     def __init__(self):
         self._plan = []
@@ -39,7 +39,6 @@ class FeaturePreprocessor:
                 self._plan.append((col_idx, "log2", None))
                 dim += 1
             elif self._is_categorical(vals):
-                # FIXME: OHE对高基数特征可能太慢
                 self._plan.append((col_idx, "ohe", vals))
                 dim += n_levels
             else:
@@ -82,7 +81,7 @@ class FeaturePreprocessor:
 
 
 def flash_rf_v2(space, budget, seed=42):
-    """v2: 加了LCB和特征预处理"""
+    """v2: RF surrogate with LCB acquisition and feature preprocessing."""
     rng = np.random.RandomState(seed)
     all_X = space.get_all_configs()
     n_total = len(all_X)
@@ -92,7 +91,6 @@ def flash_rf_v2(space, budget, seed=42):
     all_X_enc = preprocessor.transform(all_X)
     n_dim = preprocessor.feature_count
 
-    # TODO: 试试看warmup更多会不会更好
     init_size = max(10, int(budget * 0.3))
     init_indices = rng.choice(n_total, size=min(init_size, n_total), replace=False)
 
@@ -137,12 +135,12 @@ def flash_rf_v2(space, budget, seed=42):
             pass
         oob = max(0.0, oob_raw) if np.isfinite(oob_raw) else 0.0
 
-        # kappa逐步减小
+        # Kappa decays as search progresses; scale down further when model is accurate
         progress = min(1.0, (used - actual_init) / max(1, budget - actual_init))
         base_kappa = 1.5 - 1.2 * progress
         kappa = base_kappa * max(0.1, (1.0 - oob) ** 2)
 
-        # oob太差就多探索
+        # Increase exploration ratio when OOB score is negative (model unreliable)
         explore_ratio = 0.4 if oob_raw < 0 else 0.2
 
         # LCB = mu - kappa * sigma
@@ -194,7 +192,7 @@ def flash_rf_v2(space, budget, seed=42):
 
 
 def tpe_search(space, budget, seed=42):
-    """TPE (optuna)"""
+    """TPE via Optuna."""
     if not HAS_OPTUNA:
         raise RuntimeError("optuna is required for TPE; install via: pip install optuna")
 
@@ -216,7 +214,7 @@ def tpe_search(space, budget, seed=42):
         if used >= budget:
             break
 
-        # 连续40次都重复就放弃TPE自己选
+        # Fall back to random selection after 40 consecutive duplicate proposals
         if miss_streak >= 40:
             unmeasured_idx = [i for i in range(n_total)
                              if tuple(all_X[i].tolist()) not in measured]
@@ -356,7 +354,7 @@ def evaluate_v2(datasets_dir, budget=100, n_repeats=30,
         pd.DataFrame(raw_data).to_csv(
             os.path.join(raw_dir, f"{system}.csv"), index=False)
 
-    # 汇总
+    # Print summary
     print("\n--- summary ---")
     v2_better_rs = 0
     v2_better_v1 = 0
@@ -372,8 +370,8 @@ def evaluate_v2(datasets_dir, budget=100, n_repeats=30,
             v2_better_rs += 1
         if e["p_v2_vs_v1"] < 0.05:
             v2_better_v1 += 1
-    print(f"\nv2显著优于RS: {v2_better_rs}/{len(results)}")
-    print(f"v2显著优于v1: {v2_better_v1}/{len(results)}")
+    print(f"\nv2 sig. better than RS: {v2_better_rs}/{len(results)}")
+    print(f"v2 sig. better than v1: {v2_better_v1}/{len(results)}")
 
     _save_results(results, output_dir)
     return results
@@ -388,16 +386,16 @@ def _save_results(results, out_dir):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="v2评估脚本")
-    parser.add_argument("--datasets", default="datasets", help="数据集目录")
+    parser = argparse.ArgumentParser(description="v2 evaluation script")
+    parser.add_argument("--datasets", default="datasets", help="directory containing CSV datasets")
     parser.add_argument("--budget", type=int, default=100)
     parser.add_argument("--repeats", type=int, default=30)
     parser.add_argument("--output", default="results_v2")
-    parser.add_argument("--no-tpe", action="store_true", help="不跑TPE (更快)")
+    parser.add_argument("--no-tpe", action="store_true", help="skip TPE (faster)")
     args = parser.parse_args()
 
     if not os.path.isdir(args.datasets):
-        print(f"Error: datasets目录 '{args.datasets}' 不存在", file=sys.stderr)
+        print(f"Error: datasets directory '{args.datasets}' not found", file=sys.stderr)
         sys.exit(1)
 
     t0 = time.time()
