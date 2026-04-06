@@ -242,7 +242,7 @@ def evaluate_v3(datasets_dir, budget=100, n_repeats=30, output_dir="results_v3")
     print(f"\nv3 Evaluation (v2=RF-LCB, v3=LGB-ensemble)")
     print(f"Budget={budget}  Repeats={n_repeats}  Systems={len(files)}\n")
 
-    seeds = [s * 7 + 1 for s in range(n_repeats)]
+    seeds = [i * 42 + 1 for i in range(n_repeats)]
 
     for fname in files:
         system = fname.replace(".csv", "")

@@ -163,7 +163,7 @@ def evaluate_v6(datasets_dir, budget=100, n_repeats=30, output_dir="results_v6")
 
     print(f"\n=== v6 evaluation (budget={budget}, {n_repeats} repeats, {len(files)} systems) ===")
 
-    seeds = [42 + i * 7 for i in range(n_repeats)]
+    seeds = [i * 42 + 1 for i in range(n_repeats)]
 
     for fname in files:
         system = fname.replace(".csv", "")

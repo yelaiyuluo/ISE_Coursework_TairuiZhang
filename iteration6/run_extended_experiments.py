@@ -43,7 +43,7 @@ METHODS["FLASH-RF_v6"] = flash_rf_v6
 
 BUDGETS = [30, 100, 200]
 N_REPEATS = 30
-SEEDS = list(range(1, N_REPEATS + 1))
+SEEDS = [i * 42 + 1 for i in range(N_REPEATS)]
 
 
 def run_all(datasets_dir, output_dir):

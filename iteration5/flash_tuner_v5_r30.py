@@ -131,7 +131,7 @@ def evaluate(datasets_dir, budget=30, n_repeats=30, output_dir="results_v5_r30")
 
     print(f"\n=== V5-R30 (budget={budget}, repeats={n_repeats}) ===\n")
 
-    seeds = list(range(n_repeats))
+    seeds = [i * 42 + 1 for i in range(n_repeats)]
 
     for fname in files:
         system = fname.replace(".csv", "")

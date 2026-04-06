@@ -14,7 +14,7 @@ def run_comparison(datasets_dir="datasets", n_repeats=30):
     files = sorted(f for f in os.listdir(datasets_dir) if f.endswith(".csv"))
 
     all_results = {}
-    seeds = list(range(n_repeats))
+    seeds = [i * 42 + 1 for i in range(n_repeats)]
 
     for budget in budgets:
         print(f"\nRunning R={budget} evaluation")

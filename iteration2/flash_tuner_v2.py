@@ -272,7 +272,7 @@ def evaluate_v2(datasets_dir, budget=100, n_repeats=30,
     print(f"budget={budget} repeats={n_repeats} systems={len(files)} "
           f"methods={','.join(methods)}\n")
 
-    seeds = [42 + i for i in range(n_repeats)]
+    seeds = [i * 42 + 1 for i in range(n_repeats)]
 
     for fname in files:
         system = fname.replace(".csv", "")

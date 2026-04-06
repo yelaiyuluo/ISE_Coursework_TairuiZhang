@@ -118,7 +118,7 @@ def evaluate_v4(datasets_dir, budget=100, n_repeats=30, output_dir="results_v4")
     print(f"\nFLASH-RF v4 Evaluation (v2=RF+LCB, v4=RF+ThompsonSampling)")
     print(f"Budget={budget}  Repeats={n_repeats}  Systems={len(files)}\n")
 
-    seeds = list(range(1, n_repeats + 1))
+    seeds = [i * 42 + 1 for i in range(n_repeats)]
 
     for fname in files:
         system = fname.replace(".csv", "")

@@ -130,7 +130,7 @@ def evaluate_v5(datasets_dir, budget=100, n_repeats=30, output_dir="results_v5")
     print(f"\nv5 eval: v4 + conditional log transform")
     print(f"budget={budget}, repeats={n_repeats}, systems={len(files)}\n")
 
-    seeds = [42 * (i + 1) for i in range(n_repeats)]
+    seeds = [i * 42 + 1 for i in range(n_repeats)]
 
     for fname in files:
         system = fname.replace(".csv", "")
