@@ -176,7 +176,7 @@ def run_tpe_comparison(datasets_dir, budget, n_repeats, output_dir):
     print(f"\n=== TPE vs FLASH-RF ===")
     print(f"budget={budget}, repeats={n_repeats}, {len(files)} systems\n")
 
-    seeds = list(range(42, 42 + n_repeats))
+    seeds = [i * 42 + 1 for i in range(n_repeats)]
 
     for fname in files:
         system = fname.replace(".csv", "")
@@ -262,7 +262,7 @@ DEFAULTS = dict(init_ratio=0.30, batch_size=5, exploit_ratio=0.80)
 def run_sensitivity(datasets_dir, budget, n_repeats, output_dir):
     """One-factor-at-a-time hyperparameter sensitivity analysis."""
     os.makedirs(output_dir, exist_ok=True)
-    seeds = list(range(42, 42 + n_repeats))
+    seeds = [i * 42 + 1 for i in range(n_repeats)]
 
     # Four representative systems are sufficient for sensitivity analysis
     spaces = {}

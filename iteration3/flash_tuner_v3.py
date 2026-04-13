@@ -18,13 +18,6 @@ except ImportError:
 from flash_tuner import ConfigurationSpace, improv_pct, random_search, sig_stars
 from flash_tuner_v2 import flash_rf_v2
 
-try:
-    import optuna
-    optuna.logging.set_verbosity(optuna.logging.WARNING)
-    HAS_OPTUNA = True
-except ImportError:
-    HAS_OPTUNA = False
-
 
 class LGBFeatureAnalyzer:
     """Feature analyzer for LightGBM: uses native categorical support instead of OHE."""
