@@ -1,10 +1,4 @@
----
-title: "FLASH-RF Configuration Performance Tuning: A Seven-Iteration Study from Random Search to RL-Driven Strategy"
----
-
-<style>
-[id^="toc-sec-"] { scroll-margin-top: 45vh; }
-</style>
+# FLASH-RF Configuration Performance Tuning: A Seven-Iteration Study from Random Search to RL-Driven Strategy
 
 <a id="toc"></a>
 
